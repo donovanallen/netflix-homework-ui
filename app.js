@@ -2,6 +2,82 @@ const body = document.querySelector('body');
 let galleryEl;
 let allData;
 
+const billboardTypes = [
+    {
+        type: 'header',
+        create(metadata) {
+            const videoMetadata = allData.videos.find(video => video.id === metadata.id);
+
+            // .row-billboard
+            const billboardRowEl = document.createElement('div');
+            billboardRowEl.className = 'row-billboard';
+
+            // .billboard-background
+            const backgroundImgEl = document.createElement('img');
+            backgroundImgEl.setAttribute('src', videoMetadata.background);
+            backgroundImgEl.setAttribute('alt', videoMetadata.title);
+            backgroundImgEl.className = 'billboard-background';
+            
+            // .billboard-metadata
+            const metadataEl = document.createElement('div');
+            metadataEl.className = 'billboard-metadata'
+            // .billboard-metadata-logo
+            const metadataLogoEl = document.createElement('img');
+            metadataLogoEl.setAttribute('src', videoMetadata.logo);
+            metadataLogoEl.setAttribute('alt', `${videoMetadata.title} logo`);
+            metadataLogoEl.className = 'billboard-metadata-logo'
+            // .billboard-metadata-synopsis
+            const metadataSynopsisEl = document.createElement('p');
+            metadataSynopsisEl.innerHTML = videoMetadata.synopsis
+            metadataSynopsisEl.className = 'billboard-metadata-synopsis'
+            // .billboard-metadata-button
+            const metadataBtnEl = document.createElement('button');
+            metadataBtnEl.className = 'billboard-metadata-button'
+            
+            metadataEl.appendChild(metadataLogoEl);
+            metadataEl.appendChild(metadataSynopsisEl);
+            metadataEl.appendChild(metadataBtnEl);
+            billboardRowEl.appendChild(backgroundImgEl);
+            billboardRowEl.appendChild(metadataEl);
+            galleryEl.appendChild(billboardRowEl);
+        }
+    },
+    {
+        type: 'inline',
+        create(metadata) {
+            const videoMetadata = allData.videos.find(video => video.id === metadata.id);
+            
+            // .row-billboard-inline
+            const billboardRowEl = document.createElement('div');
+            billboardRowEl.className = 'row-billboard-inline row-billboard';
+
+            // .billboard-background
+            const backgroundImgEl = document.createElement('img');
+            backgroundImgEl.setAttribute('src', videoMetadata.backgroundShort);
+            backgroundImgEl.setAttribute('alt', videoMetadata.title);
+            backgroundImgEl.className = 'billboard-background';
+            
+            // .billboard-metadata
+            const metadataEl = document.createElement('div');
+            metadataEl.className = 'billboard-metadata'
+            // .billboard-metadata-logo
+            const metadataLogoEl = document.createElement('img');
+            metadataLogoEl.setAttribute('src', videoMetadata.logo);
+            metadataLogoEl.setAttribute('alt', `${videoMetadata.title} logo`);
+            metadataLogoEl.className = 'billboard-metadata-logo'
+            // .billboard-metadata-button
+            const metadataBtnEl = document.createElement('button');
+            metadataBtnEl.className = 'billboard-metadata-button'
+            
+            metadataEl.appendChild(metadataLogoEl);
+            metadataEl.appendChild(metadataBtnEl);
+            billboardRowEl.appendChild(backgroundImgEl);
+            billboardRowEl.appendChild(metadataEl);
+            galleryEl.appendChild(billboardRowEl);            
+        }
+    },
+]
+
 export const render = data => {
     if (data.rows) {
         initiateGallery(body);
@@ -21,8 +97,6 @@ const initiateGallery = parentEl => {
 export const getData = data => {
     allData = data;
     setRows(data.rows || []);
-
-    // set billboard-inline
 }
 
 const setRows = rows => {
@@ -34,31 +108,10 @@ const setRows = rows => {
 const createBillboardRow = (videoId, rowIndex) => {
     const billboardMetadata = allData.billboards.find(bb => bb.row === rowIndex);
     billboardMetadata.id = videoId;
-    console.log('billboardMetadata', billboardMetadata);
-
-    // .row-billboard
-    const billboardRowEl = document.createElement('div');
-    billboardRowEl.className = 'row-billboard';
-    
-    // .billboard-background
-    const billboardBgEl = getBoxShotImg(billboardMetadata.id);
-    billboardBgEl.className = 'billboard-background';
-
-    const billboardMdEl = document.createElement('div');
-    billboardMdEl.className = 'billboard-metadata';
-    
-    const billboardMdLogoEl = document.createElement('div');
-    billboardMdLogoEl.className = 'billboard-metadata-logo';
-    
-    // for each button in array
-    // const billboardMdBtnEl = document.createElement('button');
-    // billboardMdBtnEl.className = 'billboard-metadata-button';
-    billboardRowEl.appendChild(billboardBgEl)
-    galleryEl.appendChild(billboardRowEl);
-    galleryEl.appendChild(billboardMdEl);
-    galleryEl.appendChild(billboardMdLogoEl);
-
+    createBillboardByType(billboardMetadata);
 }
+
+const createBillboardByType = metadata => billboardTypes.find(bb => bb.type === metadata.type)?.create(metadata);
 
 const createBoxshotRow = row => {
     const boxShotRowEl = document.createElement('div');
@@ -91,5 +144,5 @@ const getBoxShotImg = id => {
     return imgEl;
 }
 
-// fn's for billboard and billboard-inline
+// button logic
 // cleanup
