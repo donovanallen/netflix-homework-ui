@@ -2,9 +2,9 @@ const body = document.querySelector('body');
 let galleryEl;
 let allData;
 
-export function render(data) {
+export const render = data => {
     if (data.rows) {
-        initiateGallery();
+        initiateGallery(body);
         getData(data);
     } else {
         // display message
@@ -12,36 +12,59 @@ export function render(data) {
     }
 };
 
-const initiateGallery = () => {
+const initiateGallery = parentEl => {
     galleryEl = document.createElement('div');
     galleryEl.className = ('gallery');
-    body.appendChild(galleryEl);
-    console.log(body);
+    parentEl.appendChild(galleryEl);
 }
 
-export function getData(data) {
+export const getData = data => {
     allData = data;
     setRows(data.rows || []);
 
-    // getBillboards by id
     // set billboard-inline
 }
 
-export const setRows = rows => {
-    console.log('setRows, rows:', rows);
+const setRows = rows => {
     for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        createBoxshotRow(row);
+        rows[i].length === 1 ? createBillboardRow(...rows[i], i) : createBoxshotRow(rows[i]);
     }
-    console.log(body);
 }
 
-export const createBoxshotRow = row => {
-    console.log('createBoxshotRow, row:', row);
+const createBillboardRow = (videoId, rowIndex) => {
+    const billboardMetadata = allData.billboards.find(bb => bb.row === rowIndex);
+    billboardMetadata.id = videoId;
+    console.log('billboardMetadata', billboardMetadata);
+
+    // .row-billboard
+    const billboardRowEl = document.createElement('div');
+    billboardRowEl.className = 'row-billboard';
+    
+    // .billboard-background
+    const billboardBgEl = getBoxShotImg(billboardMetadata.id);
+    billboardBgEl.className = 'billboard-background';
+
+    const billboardMdEl = document.createElement('div');
+    billboardMdEl.className = 'billboard-metadata';
+    
+    const billboardMdLogoEl = document.createElement('div');
+    billboardMdLogoEl.className = 'billboard-metadata-logo';
+    
+    // for each button in array
+    // const billboardMdBtnEl = document.createElement('button');
+    // billboardMdBtnEl.className = 'billboard-metadata-button';
+    billboardRowEl.appendChild(billboardBgEl)
+    galleryEl.appendChild(billboardRowEl);
+    galleryEl.appendChild(billboardMdEl);
+    galleryEl.appendChild(billboardMdLogoEl);
+
+}
+
+const createBoxshotRow = row => {
     const boxShotRowEl = document.createElement('div');
     boxShotRowEl.className = 'row-videos';
-    galleryEl.appendChild(boxShotRowEl);
 
+    galleryEl.appendChild(boxShotRowEl);
     setBoxshots(row, boxShotRowEl);
 }
 
@@ -54,20 +77,19 @@ const setBoxshots = (row, el) => {
 }
 
 const createBoxshot = videoId => {
-    const boxshot = document.createElement('div');
-    boxshot.className = 'boxshot';
-    const video = getBoxShotVideo(videoId);
-    console.log('video', video);
-    
-    // set boxshot element title and boxart from video properties
-    return boxshot;
+    const boxshotEl = document.createElement('div');
+    boxshotEl.className = 'boxshot';
+    boxshotEl.appendChild(getBoxShotImg(videoId));
+    return boxshotEl;
 }
 
-const getBoxShotVideo = id => {
-    return allData.videos.find(video => video.id === id);
+const getBoxShotImg = id => {
+    const videoMetadata = allData.videos.find(video => video.id === id);
+    const imgEl = document.createElement('img');
+    imgEl.setAttribute('src', videoMetadata.boxart);
+    imgEl.setAttribute('alt', videoMetadata.title);
+    return imgEl;
 }
 
-// flex or something for row-videos container
-// get videos boxart working
 // fn's for billboard and billboard-inline
 // cleanup

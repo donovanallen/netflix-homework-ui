@@ -25,6 +25,7 @@ html, body {
  */
 .row-videos {
   margin: 10px 0;
+  display: flex;
 }
 
 
