@@ -26,17 +26,28 @@ const billboardTypes = [
             metadataLogoEl.setAttribute('src', videoMetadata.logo);
             metadataLogoEl.setAttribute('alt', `${videoMetadata.title} logo`);
             metadataLogoEl.className = 'billboard-metadata-logo'
+            metadataEl.appendChild(metadataLogoEl);
+
             // .billboard-metadata-synopsis
             const metadataSynopsisEl = document.createElement('p');
             metadataSynopsisEl.innerHTML = videoMetadata.synopsis
-            metadataSynopsisEl.className = 'billboard-metadata-synopsis'
-            // .billboard-metadata-button
-            const metadataBtnEl = document.createElement('button');
-            metadataBtnEl.className = 'billboard-metadata-button'
-            
-            metadataEl.appendChild(metadataLogoEl);
+            metadataSynopsisEl.className = 'billboard-metadata-synopsis';
             metadataEl.appendChild(metadataSynopsisEl);
-            metadataEl.appendChild(metadataBtnEl);
+            
+            for (let i = 0; i < metadata.buttons.length; i++) {
+                const element = metadata.buttons[i];
+                // .billboard-metadata-button
+                const metadataBtnEl = document.createElement('button');
+                metadataBtnEl.innerText  = metadata.buttons[i].text;
+                metadataBtnEl.className = 'billboard-metadata-button';
+                if (metadata.buttons[i].type === 'play') {
+                    metadataBtnEl.classList.add('billboard-metadata-button-play');
+                    metadataSynopsisEl.insertAdjacentElement('afterend', metadataBtnEl);
+                } else {
+                    metadataEl.append(metadataBtnEl);
+                }
+            }
+            
             billboardRowEl.appendChild(backgroundImgEl);
             billboardRowEl.appendChild(metadataEl);
             galleryEl.appendChild(billboardRowEl);
@@ -65,12 +76,18 @@ const billboardTypes = [
             metadataLogoEl.setAttribute('src', videoMetadata.logo);
             metadataLogoEl.setAttribute('alt', `${videoMetadata.title} logo`);
             metadataLogoEl.className = 'billboard-metadata-logo'
-            // .billboard-metadata-button
-            const metadataBtnEl = document.createElement('button');
-            metadataBtnEl.className = 'billboard-metadata-button'
             
             metadataEl.appendChild(metadataLogoEl);
-            metadataEl.appendChild(metadataBtnEl);
+            
+            for (let i = 0; i < metadata.buttons.length; i++) {
+                const element = metadata.buttons[i];
+                // .billboard-metadata-button
+                const metadataBtnEl = document.createElement('button');
+                metadataBtnEl.className = metadata.buttons[i].type === 'play' ? `billboard-metadata-button billboard-metadata-button-${metadata.buttons[i].type}` : 'billboard-metadata-button';
+                metadataBtnEl.innerText  = metadata.buttons[i].text;
+                metadataEl.appendChild(metadataBtnEl);
+            }
+            
             billboardRowEl.appendChild(backgroundImgEl);
             billboardRowEl.appendChild(metadataEl);
             galleryEl.appendChild(billboardRowEl);            
@@ -83,7 +100,6 @@ export const render = data => {
         initiateGallery(body);
         getData(data);
     } else {
-        // display message
         console.error('No videos available to display');
     }
 };
@@ -144,5 +160,4 @@ const getBoxShotImg = id => {
     return imgEl;
 }
 
-// button logic
 // cleanup
